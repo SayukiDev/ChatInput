@@ -15,5 +15,6 @@ type Service struct {
 func New(opt *options.Options) (*Service, error) {
 	s := &Service{}
 	s.initOsc(opt)
+	s.initVoiceVox(opt)
 	return s, nil
 }
