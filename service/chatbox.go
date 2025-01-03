@@ -1,18 +1,18 @@
-package ui
+package service
 
 import (
 	"ChatInput/beep"
 	"strings"
 )
 
-func (u *Ui) sendChatboxMsg(text string) error {
+func (s *Service) SendChatboxMsg(text string, tts bool) error {
 	text = strings.ReplaceAll(text, "w", "笑い")
-	err := u.osc.ChatBoxInput(text, true, true)
+	err := s.osc.ChatBoxInput(text, true, true)
 	if err != nil {
 		return err
 	}
-	if u.opt.TTS && text != "" {
-		b, err := u.vox.TTS(text, u.opt.VoiceVox.Speaker)
+	if s.opt.TTS && text != "" && tts {
+		b, err := s.vv.TTS(text, s.opt.VoiceVox.Speaker)
 		if err != nil {
 			return err
 		}

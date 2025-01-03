@@ -2,29 +2,25 @@ package ui
 
 import (
 	"ChatInput/options"
-	"ChatInput/voicevox"
+	"ChatInput/service"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"github.com/SayukiDev/VRCOSC"
+	"time"
 )
 
 type Ui struct {
-	app fyne.App
-	opt *options.Options
-	osc *VRCOSC.VRCOsc
-	vox *voicevox.VoiceVox
-	mw  fyne.Window
+	app               fyne.App
+	opt               *options.Options
+	srv               *service.Service
+	lastSendInputting time.Time
+	mw                fyne.Window
 }
 
-func New(opt *options.Options, vox *voicevox.VoiceVox) *Ui {
+func New(opt *options.Options, srv *service.Service) *Ui {
 	return &Ui{
 		app: app.New(),
 		opt: opt,
-		osc: VRCOSC.New(&VRCOSC.Options{
-			SendPort: opt.SendPort,
-			RecvPort: opt.RecvPort,
-		}),
-		vox: vox,
+		srv: srv,
 	}
 }
 

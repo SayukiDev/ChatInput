@@ -7,8 +7,11 @@ import (
 )
 
 type Options struct {
-	path         string
-	lock         sync.Mutex
+	// internal
+	path  string
+	lock  sync.Mutex
+	hooks []HookFunc
+
 	SendPort     int      `json:"send_port"`
 	RecvPort     int      `json:"recv_port"`
 	RealtimeSend bool     `json:"realtime"`
@@ -16,6 +19,8 @@ type Options struct {
 	VoiceControl bool     `json:"voice_control"`
 	VoiceVox     VoiceVox `json:"voicevox"`
 }
+
+type HookFunc func(o *Options) error
 
 type VoiceVox struct {
 	Address string `json:"address"`
@@ -64,4 +69,22 @@ func (o *Options) Save() error {
 	defer file.Close()
 	encoder := json.NewEncoder(file)
 	return encoder.Encode(o)
+}
+
+func (o *Options) AddHook(f HookFunc) {
+	o.lock.Lock()
+	defer o.lock.Unlock()
+	o.hooks = append(o.hooks, f)
+	return
+}
+
+func (o *Options) Updated() error {
+	o.lock.Lock()
+	defer o.lock.Unlock()
+	for _, hook := range o.hooks {
+		if err := hook(o); err != nil {
+			return err
+		}
+	}
+	return nil
 }

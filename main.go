@@ -2,8 +2,8 @@ package main
 
 import (
 	"ChatInput/options"
+	"ChatInput/service"
 	"ChatInput/ui"
-	"ChatInput/voicevox"
 )
 
 func main() {
@@ -12,8 +12,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	vv := voicevox.New(opt.VoiceVox.Address)
-	u := ui.New(opt, vv)
+	srv, err := service.New(opt)
+	if err != nil {
+		panic(err)
+	}
+	u := ui.New(opt, srv)
 	err = u.Run()
 	if err != nil {
 		panic(err)

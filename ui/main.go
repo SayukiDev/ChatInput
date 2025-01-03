@@ -7,9 +7,9 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
-	"github.com/SayukiDev/VRCOSC"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func (u *Ui) buildMainWindow() (fyne.Window, error) {
@@ -36,23 +36,26 @@ func (u *Ui) buildInputTab(w fyne.Window) (*container.TabItem, error) {
 			return
 		}
 		if !strings.HasSuffix(text, "\n") {
-			// vrchat have limit, so disabled for now, maybe next commit will add cooldown to resole the issue
-			/*err := u.osc.ChatBoxInput("入力中...", true, true)
+			if u.lastSendInputting.After(time.Now().Add(10 * time.Second)) {
+				return
+			}
+			err := u.srv.SendChatboxMsg("入力中...", false)
 			if err != nil {
 				dialog.ShowError(fmt.Errorf("send msg error: %s", err), w)
 				return
-			}*/
+			}
+			u.lastSendInputting = time.Now()
 			return
 		}
 		e.SetText("")
-		err := u.sendChatboxMsg(strings.TrimSuffix(text, "\n"))
+		err := u.srv.SendChatboxMsg(strings.TrimSuffix(text, "\n"), true)
 		if err != nil {
 			dialog.ShowError(fmt.Errorf("send msg error: %s", err), w)
 			return
 		}
 	}
 	clear := widget.NewButton("Clear", func() {
-		err := u.sendChatboxMsg("")
+		err := u.srv.SendChatboxMsg("", false)
 		if err != nil {
 			dialog.ShowError(fmt.Errorf("send msg error: %s", err), w)
 			return
@@ -61,7 +64,7 @@ func (u *Ui) buildInputTab(w fyne.Window) (*container.TabItem, error) {
 	})
 	send := widget.NewButton("Send", func() {
 		text := e.Text
-		err := u.sendChatboxMsg(text)
+		err := u.srv.SendChatboxMsg(text, true)
 		if err != nil {
 			dialog.ShowError(fmt.Errorf("send msg error: %s", err), w)
 			return
@@ -109,16 +112,8 @@ func (u *Ui) buildOptionsTab(w fyne.Window) (*container.TabItem, error) {
 			dialog.ShowError(err, w)
 			return
 		}
-		oscNeedReset := u.opt.SendPort != sp || u.opt.RecvPort != rp
 		u.opt.SendPort = sp
 		u.opt.RecvPort = rp
-		if oscNeedReset {
-			u.osc = VRCOSC.New(&VRCOSC.Options{
-				SendPort: sp,
-				RecvPort: rp,
-			})
-			return
-		}
 		u.opt.TTS = ttsV
 		u.opt.RealtimeSend = rsV
 		u.opt.VoiceControl = voiceV
@@ -126,6 +121,10 @@ func (u *Ui) buildOptionsTab(w fyne.Window) (*container.TabItem, error) {
 		if err != nil {
 			dialog.ShowError(err, w)
 			return
+		}
+		err = u.opt.Updated()
+		if err != nil {
+			dialog.ShowError(fmt.Errorf("triggering options update hooks error: %s", err), w)
 		}
 		dialog.ShowInformation("Saved", "Options should be saved", w)
 	}
