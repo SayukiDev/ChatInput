@@ -91,7 +91,7 @@ func (u *Ui) buildOptionsTab(w fyne.Window) (*container.TabItem, error) {
 	tts := newOnOffRadio("On", "Off", &ttsV)
 	rsV := u.opt.RealtimeSend
 	rs := newOnOffRadio("On", "Off", &rsV)
-	voiceV := u.opt.TTS
+	voiceV := u.opt.VoiceControl
 	voice := newOnOffRadio("On", "Off", &voiceV)
 	f := widget.NewForm(
 		widget.NewFormItem("Send Port", sendPort),
