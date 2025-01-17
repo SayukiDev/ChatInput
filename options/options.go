@@ -12,12 +12,13 @@ type Options struct {
 	lock  sync.Mutex
 	hooks []HookFunc
 
-	SendPort     int      `json:"send_port"`
-	RecvPort     int      `json:"recv_port"`
-	RealtimeSend bool     `json:"realtime"`
-	TTS          bool     `json:"tts"`
-	VoiceControl bool     `json:"voice_control"`
-	VoiceVox     VoiceVox `json:"voicevox"`
+	SendPort        int      `json:"send_port"`
+	RecvPort        int      `json:"recv_port"`
+	EnableTypingMsg bool     `json:"enable_typing_msg"`
+	RealtimeSend    bool     `json:"realtime"`
+	TTS             bool     `json:"tts"`
+	VoiceControl    bool     `json:"voice_control"`
+	VoiceVox        VoiceVox `json:"voicevox"`
 }
 
 type HookFunc func(o *Options) error

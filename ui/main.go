@@ -35,6 +35,9 @@ func (u *Ui) buildInputTab(w fyne.Window) (*container.TabItem, error) {
 		if text == "" {
 			return
 		}
+		if !u.opt.EnableTypingMsg {
+			return
+		}
 		if !strings.HasSuffix(text, "\n") {
 			if u.lastSendInputting.After(time.Now().Add(10 * time.Second)) {
 				return
@@ -87,6 +90,8 @@ func (u *Ui) buildOptionsTab(w fyne.Window) (*container.TabItem, error) {
 	sendPort.SetText(strconv.Itoa(u.opt.SendPort))
 	revcPort := widget.NewEntry()
 	revcPort.SetText(strconv.Itoa(u.opt.RecvPort))
+	etmV := u.opt.EnableTypingMsg
+	etm := newOnOffRadio("On", "Off", &etmV)
 	ttsV := u.opt.TTS
 	tts := newOnOffRadio("On", "Off", &ttsV)
 	rsV := u.opt.RealtimeSend
@@ -96,6 +101,7 @@ func (u *Ui) buildOptionsTab(w fyne.Window) (*container.TabItem, error) {
 	f := widget.NewForm(
 		widget.NewFormItem("Send Port", sendPort),
 		widget.NewFormItem("Revc Port", revcPort),
+		widget.NewFormItem("Enable Typing Message", etm),
 		widget.NewFormItem("TTS", tts),
 		widget.NewFormItem("Realtime Send", rs),
 		widget.NewFormItem("Voice Control", voice),
