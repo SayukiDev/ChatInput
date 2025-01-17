@@ -120,6 +120,7 @@ func (u *Ui) buildOptionsTab(w fyne.Window) (*container.TabItem, error) {
 		}
 		u.opt.SendPort = sp
 		u.opt.RecvPort = rp
+		u.opt.EnableTypingMsg = etmV
 		u.opt.TTS = ttsV
 		u.opt.RealtimeSend = rsV
 		u.opt.VoiceControl = voiceV
