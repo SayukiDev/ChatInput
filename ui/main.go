@@ -35,11 +35,11 @@ func (u *Ui) buildInputTab(w fyne.Window) (*container.TabItem, error) {
 		if text == "" {
 			return
 		}
-		if !u.opt.EnableTypingMsg {
-			return
-		}
 		if !strings.HasSuffix(text, "\n") {
-			if u.lastSendInputting.After(time.Now().Add(10 * time.Second)) {
+			if !u.opt.EnableTypingMsg {
+				return
+			}
+			if u.lastSendInputting.After(time.Now().Add(-10 * time.Second)) {
 				return
 			}
 			err := u.srv.SendChatboxMsg("入力中...", false)
@@ -51,6 +51,7 @@ func (u *Ui) buildInputTab(w fyne.Window) (*container.TabItem, error) {
 			return
 		}
 		e.SetText("")
+		u.lastSendInputting = time.Now().Add(-10 * time.Second)
 		err := u.srv.SendChatboxMsg(strings.TrimSuffix(text, "\n"), true)
 		if err != nil {
 			dialog.ShowError(fmt.Errorf("send msg error: %s", err), w)

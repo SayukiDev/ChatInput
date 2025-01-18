@@ -6,11 +6,11 @@ import (
 )
 
 func (s *Service) SendChatboxMsg(text string, tts bool) error {
-	text = strings.ReplaceAll(text, "w", "笑い")
 	err := s.osc.ChatBoxInput(text, true, true)
 	if err != nil {
 		return err
 	}
+	text = strings.ReplaceAll(text, "w", "笑い")
 	if s.opt.TTS && text != "" && tts {
 		b, err := s.vv.TTS(text, s.opt.VoiceVox.Speaker)
 		if err != nil {
