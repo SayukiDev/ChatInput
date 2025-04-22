@@ -1,8 +1,7 @@
 package service
 
 import (
-	"ChatInput/beep"
-	"strings"
+	"github.com/SayukiDev/Beep"
 )
 
 func (s *Service) SendChatboxMsg(text string, tts bool) error {
@@ -10,7 +9,6 @@ func (s *Service) SendChatboxMsg(text string, tts bool) error {
 	if err != nil {
 		return err
 	}
-	text = strings.ReplaceAll(text, "w", "笑い")
 	if s.opt.TTS && text != "" && tts {
 		b, err := s.vv.TTS(text, s.opt.VoiceVox.Speaker)
 		if err != nil {
@@ -22,7 +20,7 @@ func (s *Service) SendChatboxMsg(text string, tts bool) error {
 		if err != nil {
 			return err
 		}*/
-		err = beep.Play(b, "wav", func() {
+		err = Beep.Play(b, "wav", func() {
 			/*err = u.osc.SendRaw(osc.NewMessage("/input/Voice", int32(1)))
 			if err != nil {
 				log.Println("Warn: [ Send voice toggle error:", err, "]")
