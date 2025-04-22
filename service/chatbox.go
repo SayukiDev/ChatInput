@@ -4,8 +4,8 @@ import (
 	"github.com/SayukiDev/Beep"
 )
 
-func (s *Service) SendChatboxMsg(text string, tts bool) error {
-	err := s.osc.ChatBoxInput(text, true, true)
+func (s *Service) SendChatboxMsg(text string, tts bool, disableSfx bool) error {
+	err := s.osc.ChatBoxInput(text, true, !disableSfx)
 	if err != nil {
 		return err
 	}

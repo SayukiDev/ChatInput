@@ -35,14 +35,14 @@ func (u *Ui) buildInputTab(w fyne.Window) (*container.TabItem, error) {
 		if text == "" {
 			return
 		}
-		if !strings.HasSuffix(text, "\n") {
+		if !strings.Contains(text, "\n") {
 			if !u.opt.EnableTypingMsg {
 				return
 			}
 			if u.lastSendInputting.After(time.Now().Add(-10 * time.Second)) {
 				return
 			}
-			err := u.srv.SendChatboxMsg("入力中...", false)
+			err := u.srv.SendChatboxMsg("入力中...", false, true)
 			if err != nil {
 				dialog.ShowError(fmt.Errorf("send msg error: %s", err), w)
 				return
@@ -52,14 +52,14 @@ func (u *Ui) buildInputTab(w fyne.Window) (*container.TabItem, error) {
 		}
 		e.SetText("")
 		u.lastSendInputting = time.Now().Add(-10 * time.Second)
-		err := u.srv.SendChatboxMsg(strings.TrimSuffix(text, "\n"), true)
+		err := u.srv.SendChatboxMsg(strings.ReplaceAll(text, "\n", ""), true, false)
 		if err != nil {
 			dialog.ShowError(fmt.Errorf("send msg error: %s", err), w)
 			return
 		}
 	}
 	clear := widget.NewButton("Clear", func() {
-		err := u.srv.SendChatboxMsg("", false)
+		err := u.srv.SendChatboxMsg("", false, false)
 		if err != nil {
 			dialog.ShowError(fmt.Errorf("send msg error: %s", err), w)
 			return
@@ -68,7 +68,7 @@ func (u *Ui) buildInputTab(w fyne.Window) (*container.TabItem, error) {
 	})
 	send := widget.NewButton("Send", func() {
 		text := e.Text
-		err := u.srv.SendChatboxMsg(text, true)
+		err := u.srv.SendChatboxMsg(text, true, false)
 		if err != nil {
 			dialog.ShowError(fmt.Errorf("send msg error: %s", err), w)
 			return
