@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"ChatInput/common/widget/entry"
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -30,33 +31,53 @@ func (u *Ui) buildMainWindow() (fyne.Window, error) {
 }
 
 func (u *Ui) buildInputTab(w fyne.Window) (*container.TabItem, error) {
-	e := widget.NewMultiLineEntry()
-	e.OnChanged = func(text string) {
-		if text == "" {
-			return
+	e := entry.NewExtEntry()
+	e.OnFocusGained = func() bool {
+		if !u.opt.EnableTypingMsg {
+			return false
 		}
-		if !strings.Contains(text, "\n") {
-			if !u.opt.EnableTypingMsg {
-				return
+		err := u.srv.Tasks.Add("Typing", func(c chan struct{}) {
+			for ; ; <-time.Tick(10 * time.Second) {
+				select {
+				case <-c:
+					return
+				default:
+				}
+				if !u.opt.EnableTypingMsg {
+					return
+				}
+				if e.Text == "" {
+					continue
+				}
+				err := u.srv.SendChatboxMsg("入力中...", false, true)
+				if err != nil {
+					dialog.ShowError(fmt.Errorf("send msg error: %s", err), w)
+					return
+				}
 			}
-			if u.lastSendInputting.After(time.Now().Add(-10 * time.Second)) {
-				return
-			}
-			err := u.srv.SendChatboxMsg("入力中...", false, true)
+		})
+		if err != nil {
+			dialog.ShowError(fmt.Errorf("add task error: %s", err), w)
+		}
+		return false
+	}
+	e.OnFocusLost = func() bool {
+		if !u.opt.EnableTypingMsg {
+			return false
+		}
+		u.srv.Tasks.Remove("Typing")
+		return false
+	}
+	e.OnTypedKey = func(event *fyne.KeyEvent) bool {
+		if event.Name == fyne.KeyReturn {
+			e.SetText("")
+			err := u.srv.SendChatboxMsg(strings.ReplaceAll(e.Text, "\n", ""), true, false)
 			if err != nil {
 				dialog.ShowError(fmt.Errorf("send msg error: %s", err), w)
-				return
+				return true
 			}
-			u.lastSendInputting = time.Now()
-			return
 		}
-		e.SetText("")
-		u.lastSendInputting = time.Now().Add(-10 * time.Second)
-		err := u.srv.SendChatboxMsg(strings.ReplaceAll(text, "\n", ""), true, false)
-		if err != nil {
-			dialog.ShowError(fmt.Errorf("send msg error: %s", err), w)
-			return
-		}
+		return true
 	}
 	clear := widget.NewButton("Clear", func() {
 		err := u.srv.SendChatboxMsg("", false, false)

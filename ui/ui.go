@@ -5,15 +5,13 @@ import (
 	"ChatInput/service"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"time"
 )
 
 type Ui struct {
-	app               fyne.App
-	opt               *options.Options
-	srv               *service.Service
-	lastSendInputting time.Time
-	mw                fyne.Window
+	app fyne.App
+	opt *options.Options
+	srv *service.Service
+	mw  fyne.Window
 }
 
 func New(opt *options.Options, srv *service.Service) *Ui {
