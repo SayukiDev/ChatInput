@@ -70,8 +70,9 @@ func (u *Ui) buildInputTab(w fyne.Window) (*container.TabItem, error) {
 	}
 	e.OnTypedKey = func(event *fyne.KeyEvent) bool {
 		if event.Name == fyne.KeyReturn {
+			text := e.Text
 			e.SetText("")
-			err := u.srv.SendChatboxMsg(strings.ReplaceAll(e.Text, "\n", ""), true, false)
+			err := u.srv.SendChatboxMsg(strings.ReplaceAll(text, "\n", ""), true, false)
 			if err != nil {
 				dialog.ShowError(fmt.Errorf("send msg error: %s", err), w)
 				return true
