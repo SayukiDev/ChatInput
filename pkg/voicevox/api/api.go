@@ -1,16 +1,17 @@
-package voicevox
+package api
 
 import (
 	"github.com/go-resty/resty/v2"
 	"time"
 )
 
-type VoiceVox struct {
-	c *resty.Client
+type Api struct {
+	c       *resty.Client
+	speaker int
 }
 
-func New(baseurl string) *VoiceVox {
-	return &VoiceVox{
+func New(baseurl string) *Api {
+	return &Api{
 		c: resty.New().
 			SetBaseURL(baseurl).
 			SetTimeout(20 * time.Second),

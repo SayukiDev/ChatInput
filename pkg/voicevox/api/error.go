@@ -1,4 +1,4 @@
-package voicevox
+package api
 
 import (
 	"encoding/json"

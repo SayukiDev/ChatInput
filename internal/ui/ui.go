@@ -1,23 +1,20 @@
 package ui
 
 import (
-	"ChatInput/options"
-	"ChatInput/service"
+	"ChatInput/internal/service"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 )
 
 type Ui struct {
 	app fyne.App
-	opt *options.Options
 	srv *service.Service
 	mw  fyne.Window
 }
 
-func New(opt *options.Options, srv *service.Service) *Ui {
+func New(srv *service.Service) *Ui {
 	return &Ui{
 		app: app.New(),
-		opt: opt,
 		srv: srv,
 	}
 }

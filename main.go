@@ -1,9 +1,10 @@
 package main
 
 import (
+	"ChatInput/internal/service"
+	"ChatInput/internal/ui"
 	"ChatInput/options"
-	"ChatInput/service"
-	"ChatInput/ui"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -16,9 +17,16 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	u := ui.New(opt, srv)
+	u := ui.New(srv)
 	err = u.Run()
 	if err != nil {
 		panic(err)
 	}
+
+	logrus.Println("Shutdown...")
+	err = srv.Close()
+	if err != nil {
+		panic(err)
+	}
+	logrus.Println("Done.")
 }

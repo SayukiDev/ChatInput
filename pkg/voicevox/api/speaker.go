@@ -1,4 +1,4 @@
-package voicevox
+package api
 
 import "encoding/json"
 
@@ -9,7 +9,7 @@ type Speakers []struct {
 	Version     string   `json:"version"`
 }
 
-func (l *VoiceVox) ListSpeaker() (Speakers, error) {
+func (l *Api) ListSpeaker() (Speakers, error) {
 	r, err := l.c.R().Get("/speakers")
 	err = errorCheck(r, err, true)
 	if err != nil {
@@ -20,4 +20,8 @@ func (l *VoiceVox) ListSpeaker() (Speakers, error) {
 		return nil, err
 	}
 	return speakers, nil
+}
+
+func (l *Api) SetSpeaker(id int) {
+	l.speaker = id
 }

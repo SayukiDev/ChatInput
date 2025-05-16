@@ -24,8 +24,10 @@ type Options struct {
 type HookFunc func(o *Options) error
 
 type VoiceVox struct {
-	Address string `json:"address"`
-	Speaker int    `json:"speaker"`
+	Path      string   `json:"path"`
+	LineLimit int      `json:"line_limit"`
+	Selected  int      `json:"selected"`
+	Args      []string `json:"args"`
 }
 
 func NewOptions(p string) *Options {
@@ -37,8 +39,9 @@ func NewOptions(p string) *Options {
 		TTS:          false,
 		VoiceControl: false,
 		VoiceVox: VoiceVox{
-			Address: "http://127.0.0.1:50021",
-			Speaker: 4,
+			Path:      "./windows-nvidia/run.exe",
+			LineLimit: 50,
+			Selected:  -1,
 		},
 	}
 }

@@ -1,4 +1,4 @@
-package voicevox
+package api
 
 import (
 	"bytes"
@@ -42,7 +42,7 @@ type Styles struct {
 	Name string `json:"name"`
 }
 
-func (l *VoiceVox) getQuery(id int, text string) (*SynthParams, error) {
+func (l *Api) getQuery(id int, text string) (*SynthParams, error) {
 	r, err := l.c.R().SetQueryParams(map[string]string{
 		"speaker": strconv.Itoa(id),
 		"text":    text,
@@ -62,7 +62,7 @@ func (l *VoiceVox) getQuery(id int, text string) (*SynthParams, error) {
 	return params, nil
 }
 
-func (l *VoiceVox) synth(id int, params *SynthParams) ([]byte, error) {
+func (l *Api) synth(id int, params *SynthParams) ([]byte, error) {
 	b, err := json.Marshal(params)
 	if err != nil {
 		return nil, err
@@ -91,8 +91,8 @@ func (l *VoiceVox) synth(id int, params *SynthParams) ([]byte, error) {
 	return buff.Bytes(), nil
 }
 
-func (l *VoiceVox) TTS(text string, speaker int) ([]byte, error) {
-	params, err := l.getQuery(speaker, text)
+func (l *Api) TTS(text string) ([]byte, error) {
+	params, err := l.getQuery(l.speaker, text)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func (l *VoiceVox) TTS(text string, speaker int) ([]byte, error) {
 	params.SpeedScale = 1
 	params.PitchScale = 0
 	params.VolumeScale = 2
-	b, err := l.synth(speaker, params)
+	b, err := l.synth(l.speaker, params)
 	if err != nil {
 		return nil, err
 	}

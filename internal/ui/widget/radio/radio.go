@@ -1,8 +1,8 @@
-package ui
+package radio
 
 import "fyne.io/fyne/v2/widget"
 
-func newOnOffRadio(on, off string, v *bool) *widget.RadioGroup {
+func NewOnOffRadio(on, off string, v *bool) *widget.RadioGroup {
 	var rP *widget.RadioGroup
 	r := widget.NewRadioGroup([]string{on, off}, func(s string) {
 		if s == on {
