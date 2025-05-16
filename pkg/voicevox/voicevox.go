@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"strings"
 	"sync/atomic"
+	"syscall"
 	"unicode"
 )
 
@@ -112,6 +113,9 @@ func (v *VoiceVox) Start() error {
 	v.process = exec.Command(v.cmd[0], v.cmd[1:]...)
 	v.process.Stdout = v.writer
 	v.process.Stderr = v.writer
+	v.process.SysProcAttr = &syscall.SysProcAttr{
+		HideWindow: true,
+	}
 	if err := v.process.Start(); err != nil {
 		return err
 	}
