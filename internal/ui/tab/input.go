@@ -62,7 +62,7 @@ func NewInputTab(s *service.Service, w fyne.Window) *container.TabItem {
 		}
 		return true
 	}
-	clear := widget.NewButton("Close", func() {
+	clear := widget.NewButton("Clear", func() {
 		err := s.SendChatboxMsg("", false, false)
 		if err != nil {
 			dialog.ShowError(fmt.Errorf("send msg error: %s", err), w)
