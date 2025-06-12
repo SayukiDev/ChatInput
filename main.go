@@ -18,15 +18,16 @@ func main() {
 		panic(err)
 	}
 	u := ui.New(srv)
+	defer func() {
+		logrus.Println("Shutdown...")
+		err = srv.Close()
+		if err != nil {
+			panic(err)
+		}
+		logrus.Println("Done.")
+	}()
 	err = u.Run()
 	if err != nil {
 		panic(err)
 	}
-
-	logrus.Println("Shutdown...")
-	err = srv.Close()
-	if err != nil {
-		panic(err)
-	}
-	logrus.Println("Done.")
 }

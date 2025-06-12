@@ -113,6 +113,7 @@ func (v *VoiceVox) Start() error {
 	if v.running.Load() {
 		return nil
 	}
+	v.runed = false
 	v.closed = make(chan struct{})
 	v.running.Store(true)
 	v.reader, v.writer = io.Pipe()

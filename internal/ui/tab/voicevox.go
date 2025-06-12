@@ -2,6 +2,7 @@ package tab
 
 import (
 	"ChatInput/internal/service"
+	"errors"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
@@ -34,7 +35,14 @@ func NewVoiceVoxTab(s *service.Service, w fyne.Window) *container.TabItem {
 	})
 	spsSelectMap := make(map[string]int)
 	spsS := widget.NewSelect(nil, func(key string) {
-		id := spsSelectMap[key]
+		if key == "" {
+			return
+		}
+		id, ok := spsSelectMap[key]
+		if !ok {
+			dialog.ShowError(errors.New("invail selected key"), w)
+			return
+		}
 		s.VV.SetSpeaker(id)
 		s.Option.VoiceVox.Selected = id
 		s.Option.Save()
