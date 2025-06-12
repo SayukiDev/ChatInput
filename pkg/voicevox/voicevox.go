@@ -79,16 +79,22 @@ func (v *VoiceVox) readToLogLoop() {
 			continue
 		}
 		if len(v.log) == cap(v.log) {
-			newLog := make([]string, 0, len(v.log))
-			newLog = append(newLog, v.log[len(v.log)-1+(len(v.log)/5):]...)
+			trim := len(v.log) / 5
+			if trim == 0 {
+				trim = 1
+			}
+			newLog := make([]string, 0, cap(v.log))
+			newLog = append(newLog, v.log[trim:]...)
 			v.log = newLog
 		}
 		if strings.Contains(line, "running") {
-			v.StartedHook(v.runed)
+			if !v.runed {
+				v.StartedHook(v.runed)
+				v.runed = true
+			}
 			runned = true
-			v.runed = true
 		}
-		v.log = append(v.log, line)
+		v.log = append(v.log, strings.TrimRight(line, "\r\n"))
 		if runned {
 			v.LogUpdateHook(v.log)
 		}
@@ -128,6 +134,10 @@ func (v *VoiceVox) Close() error {
 		return nil
 	}
 	v.running.Store(false)
+	if v.process != nil && v.process.Process != nil {
+		_ = v.process.Process.Kill()
+		_ = v.process.Wait()
+	}
 	err := v.reader.Close()
 	if err != nil {
 		return err
@@ -136,8 +146,6 @@ func (v *VoiceVox) Close() error {
 	if err != nil {
 		return err
 	}
-	v.process.Process.Kill()
-	_ = v.process.Wait()
 	<-v.closed
 	return nil
 }
